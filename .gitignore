@@ -15,3 +15,12 @@ Cargo.lock
 **/*.rs.bk
 
 # End of https://www.gitignore.io/api/rust
+
+
+#Added by cargo
+#
+#already existing elements are commented out
+
+/target
+#**/*.rs.bk
+#Cargo.lock
