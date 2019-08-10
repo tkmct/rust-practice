@@ -2,8 +2,10 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 pub struct MerkleTree {}
 
+type Error = ();
+
 #[derive(Debug, Clone)]
-struct Node {
+pub struct Node {
     hash_value: u64,
     left: Option<Box<Node>>,
     right: Option<Box<Node>>,
@@ -20,6 +22,13 @@ impl Default for Node {
             right: None,
         }
     }
+}
+
+#[derive(Debug)]
+pub struct RootNode {
+    hash_value: u64,
+    top_node: Box<Node>,
+    depth: usize,
 }
 
 // hash two values
@@ -51,7 +60,7 @@ fn construct_node(left: Node, right: Node) -> Node {
 }
 
 // Construct merkle tree with given Vec<T>
-fn construct_tree<T: Hash>(values: Vec<T>) -> Node {
+pub fn construct_tree<T: Hash>(values: Vec<T>) -> RootNode {
     let mut i = 1;
     let mut j = 0;
     let len = values.len();
@@ -78,21 +87,65 @@ fn construct_tree<T: Hash>(values: Vec<T>) -> Node {
         nodes = parents;
     }
 
-    nodes[0].clone()
+    let top_node = nodes[0].clone();
+    RootNode {
+        hash_value: top_node.hash_value,
+        top_node: Box::new(top_node),
+        depth: j,
+    }
 }
 
 // Construct merkle proof for given index
-fn construct_merkle_proof(i: u64) -> Vec<u64> {
-    vec![]
+pub fn construct_merkle_proof(merkle_tree: &RootNode, i: usize) -> Result<Vec<u64>, Error> {
+    let mut i = i;
+    let mut merkle_proof = vec![];
+    let mut d = 2_usize.pow(merkle_tree.depth as u32);
+    let mut node = merkle_tree.top_node.clone();
+
+    if i >= d {
+        ()
+    }
+
+    while d != 1 {
+        merkle_proof.push(if i < d / 2 {
+            let hash = node.right.unwrap().hash_value;
+            node = node.left.unwrap();
+            hash
+        } else {
+            i = i - d / 2;
+            let hash = node.left.unwrap().hash_value;
+            node = node.right.unwrap();
+            hash
+        });
+
+        d /= 2;
+    }
+
+    merkle_proof.reverse();
+    Ok(merkle_proof)
 }
 
-fn verify_merkle_proof<T: Hash>(root: Node, value: T, inclusion_proof: Vec<u64>) -> bool {
+pub fn verify_merkle_proof<T: Hash>(
+    root: RootNode,
+    value: T,
+    i: usize,
+    inclusion_proof: Vec<u64>,
+) -> bool {
     let mut hasher = DefaultHasher::new();
     value.hash(&mut hasher);
-    let root_hash = inclusion_proof
-        .iter()
-        .fold(hasher.finish(), |a, b| combine_hash(a, *b));
-    root_hash == root.hash_value
+    let mut hash = hasher.finish();
+    let mut i = i;
+
+    for p in inclusion_proof {
+        hash = if i % 2 == 0 {
+            combine_hash(hash, p)
+        } else {
+            combine_hash(p, hash)
+        };
+        i /= 2;
+    }
+
+    hash == root.hash_value
 }
 
 #[cfg(test)]
@@ -100,9 +153,9 @@ mod tests {
     use super::*;
     #[test]
     fn test() {
-        let values = vec![1, 3, 8, 2, 4];
+        let values = vec![1, 3, 8];
         let node = construct_tree(values);
-        println!("{:?}", node);
-        assert_eq!(1, 2);
+        let merkle_proof = construct_merkle_proof(&node, 2).unwrap();
+        assert!(verify_merkle_proof(node, 8, 2, merkle_proof));
     }
 }
