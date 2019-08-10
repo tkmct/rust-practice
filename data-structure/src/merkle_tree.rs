@@ -22,6 +22,14 @@ impl Default for Node {
     }
 }
 
+// hash two values
+fn combine_hash(a: u64, b: u64) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    hasher.write_u64(a);
+    hasher.write_u64(b);
+    hasher.finish()
+}
+
 // construct node from value
 fn construct_leaf_node<T: Hash>(value: T) -> Node {
     let mut hasher = DefaultHasher::new();
@@ -35,12 +43,8 @@ fn construct_leaf_node<T: Hash>(value: T) -> Node {
 
 // Construct a node from left node and right node
 fn construct_node(left: Node, right: Node) -> Node {
-    let mut hasher = DefaultHasher::new();
-    hasher.write_u64(left.hash_value);
-    hasher.write_u64(right.hash_value);
-
     Node {
-        hash_value: hasher.finish(),
+        hash_value: combine_hash(left.hash_value, right.hash_value),
         left: Some(Box::new(left)),
         right: Some(Box::new(right)),
     }
@@ -77,19 +81,25 @@ fn construct_tree<T: Hash>(values: Vec<T>) -> Node {
     nodes[0].clone()
 }
 
-fn construct_inclusion_proof() -> Vec<u64> {
+// Construct merkle proof for given index
+fn construct_merkle_proof(i: u64) -> Vec<u64> {
     vec![]
 }
 
-fn verify_inclusion_proof<T: Hash>(root: Node, value: T, inclusion_proof: Vec<u64>) -> bool {
-    true
+fn verify_merkle_proof<T: Hash>(root: Node, value: T, inclusion_proof: Vec<u64>) -> bool {
+    let mut hasher = DefaultHasher::new();
+    value.hash(&mut hasher);
+    let root_hash = inclusion_proof
+        .iter()
+        .fold(hasher.finish(), |a, b| combine_hash(a, *b));
+    root_hash == root.hash_value
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn test_construct_tree() {
+    fn test() {
         let values = vec![1, 3, 8, 2, 4];
         let node = construct_tree(values);
         println!("{:?}", node);
