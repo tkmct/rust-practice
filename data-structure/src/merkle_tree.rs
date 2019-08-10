@@ -46,6 +46,7 @@ fn construct_node(left: Node, right: Node) -> Node {
     }
 }
 
+// Construct merkle tree with given Vec<T>
 fn construct_tree<T: Hash>(values: Vec<T>) -> Node {
     let mut i = 1;
     let mut j = 0;
