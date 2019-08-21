@@ -3,16 +3,14 @@ use bit_vec::BitVec;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-
 pub struct BloomFilter {
     bits: BitVec,
 }
 
-
 impl BloomFilter {
     pub fn new() -> Self {
         BloomFilter {
-            bits: BitVec::from_elem(64, false)
+            bits: BitVec::from_elem(64, false),
         }
     }
 
@@ -58,4 +56,3 @@ mod tests {
         assert!(!filter.check(&42));
     }
 }
-

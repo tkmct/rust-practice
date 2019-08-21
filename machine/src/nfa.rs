@@ -1,10 +1,6 @@
-struct Nfa {
+struct Nfa {}
 
-}
-
-impl Nfa {
-
-}
+impl Nfa {}
 
 #[cfg(test)]
 mod tests {

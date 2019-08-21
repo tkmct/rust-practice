@@ -25,8 +25,10 @@ impl Dfa {
     ) -> Result<Self, ()> {
         // check transition_function's row and column is correct number.
         if transition_function.len() == states as usize
-            && transition_function.iter().all(|v| v.len() == alphabets as usize) {
-
+            && transition_function
+                .iter()
+                .all(|v| v.len() == alphabets as usize)
+        {
             Ok(Dfa {
                 states,
                 alphabets,
@@ -51,21 +53,22 @@ impl Dfa {
 
     pub fn execute(&self, input: Vec<u64>) -> Result<bool, ()> {
         if !input.iter().all(|a| a < &self.alphabets) {
-            return Err(())
+            return Err(());
         }
 
         let res = input
             .iter()
             .fold(Ok(self.initial_state), |state, alphabet| {
                 self.transition(state.unwrap(), *alphabet)
-            }).unwrap();
+            })
+            .unwrap();
         Ok(self.accept_states.contains(&res))
     }
 
     pub fn is_language(&self, input: Vec<u64>) -> bool {
         match self.execute(input) {
             Ok(res) => res,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -76,10 +79,7 @@ mod tests {
 
     #[test]
     fn test_accepted1() {
-        let transition_function = vec![
-            vec![1, 0],
-            vec![0, 1],
-        ];
+        let transition_function = vec![vec![1, 0], vec![0, 1]];
         let dfa = Dfa::new(2, 2, transition_function, 0, vec![0]).unwrap();
 
         let input = vec![1, 1, 1];
@@ -88,10 +88,7 @@ mod tests {
 
     #[test]
     fn test_accepted2() {
-        let transition_function = vec![
-            vec![1, 0],
-            vec![0, 1],
-        ];
+        let transition_function = vec![vec![1, 0], vec![0, 1]];
         let dfa = Dfa::new(2, 2, transition_function, 0, vec![0]).unwrap();
 
         let input = vec![1, 0, 0];
@@ -100,10 +97,7 @@ mod tests {
 
     #[test]
     fn test_rejected1() {
-        let transition_function = vec![
-            vec![1, 0],
-            vec![0, 1],
-        ];
+        let transition_function = vec![vec![1, 0], vec![0, 1]];
         let dfa = Dfa::new(2, 2, transition_function, 0, vec![0]).unwrap();
 
         let input = vec![1, 0, 1];
@@ -112,10 +106,7 @@ mod tests {
 
     #[test]
     fn test_rejected2() {
-        let transition_function = vec![
-            vec![1, 0],
-            vec![0, 1],
-        ];
+        let transition_function = vec![vec![1, 0], vec![0, 1]];
         let dfa = Dfa::new(2, 2, transition_function, 0, vec![0]).unwrap();
 
         let input = vec![0, 0, 0, 1];
@@ -124,10 +115,7 @@ mod tests {
 
     #[test]
     fn test_language() {
-        let transition_function = vec![
-            vec![1, 0],
-            vec![0, 1],
-        ];
+        let transition_function = vec![vec![1, 0], vec![0, 1]];
         let dfa = Dfa::new(2, 2, transition_function, 0, vec![0]).unwrap();
 
         let input = vec![1, 0, 0];
@@ -136,10 +124,7 @@ mod tests {
 
     #[test]
     fn test_non_language() {
-        let transition_function = vec![
-            vec![1, 0],
-            vec![0, 1],
-        ];
+        let transition_function = vec![vec![1, 0], vec![0, 1]];
         let dfa = Dfa::new(2, 2, transition_function, 0, vec![0]).unwrap();
 
         let input = vec![0, 0, 0, 1];
