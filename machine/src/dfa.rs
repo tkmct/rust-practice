@@ -51,7 +51,7 @@ impl Dfa {
 
     pub fn execute(&self, input: Vec<u64>) -> Result<bool, ()> {
         if !input.iter().all(|a| a < &self.alphabets) {
-            ()
+            return Err(())
         }
 
         let res = input
