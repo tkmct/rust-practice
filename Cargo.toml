@@ -8,5 +8,6 @@ edition = "2018"
 members = [
     "algorithm",
     "data-structure",
-    "crypto"
+    "crypto",
+    "machine"
 ]
