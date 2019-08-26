@@ -1,5 +1,6 @@
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::fmt;
 use std::fmt::Debug;
 
 #[derive(Debug, Eq, PartialEq)]
@@ -7,20 +8,6 @@ struct Node<T: Debug> {
     data: T,
     next: Option<Rc<RefCell<Node<T>>>>
 }
-
-//impl<T> Node<T> 
-//where T: Debug
-//{
-//    pub fn get_next(&self) -> Option<Self> {
-//        match self.next {
-//            Some(node) => {
-//                *node.
-//                Some()
-//            },
-//            None => None,
-//        }
-//    }
-//}
 
 #[derive(Debug)]
 pub struct LinkedList<T: Debug> {
@@ -75,6 +62,22 @@ where T: Debug + Copy
 
         self.length += 1;
     }
+
+    pub fn delete(&mut self, _data: T) {
+    }
+
+    pub fn contains(&self, data: T) -> bool {
+        false
+    }
+}
+
+impl<T> fmt::Display for LinkedList<T> 
+where T: Debug
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // TODO: implement
+        write!(f, "")
+    }
 }
 
 
@@ -128,5 +131,25 @@ mod tests {
         let mut list = LinkedList::new();
         list.append(1);
         assert_eq!((*list.head.unwrap()).borrow().data, 1);
+    }
+
+    #[test]
+    fn test_contains_success() {
+        let mut list = LinkedList::new();
+        list.append(1);
+        list.append(2);
+        list.append(3);
+        list.append(6);
+        assert!(list.contains(6));
+    }
+
+    #[test]
+    fn test_contains_fail() {
+        let mut list = LinkedList::new();
+        list.append(1);
+        list.append(2);
+        list.append(3);
+        list.append(6);
+        assert!(!list.contains(5));
     }
 }
