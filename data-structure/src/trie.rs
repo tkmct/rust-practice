@@ -40,7 +40,9 @@ impl Node {
 
         let s = &s[1..];
         let n = get_digit(c.unwrap()).unwrap();
-        self.append_child(n);
+        if self.children[n].is_none() {
+            self.append_child(n);
+        }
         self.children[n].as_mut().unwrap().insert(s);
     }
 
@@ -116,5 +118,14 @@ mod tests {
 
         assert!(trie.search("their"));
         assert!(!trie.search("thei"));
+    }
+
+    #[test]
+    fn test_add_existing_node() {
+        let mut trie = Trie::new();
+        trie.insert("there");
+        trie.insert("the");
+
+        assert!(trie.search("there"));
     }
 }
