@@ -61,6 +61,28 @@ impl Node {
 
         child.as_ref().unwrap().search(s)
     }
+
+    /// returns true if there are at least one child node
+    /// in children array
+    fn is_leaf(&self) -> bool {
+        self.children.iter().all(|c| c.is_none())
+    }
+
+    fn get_node(&self, s: &str) -> Option<&Node> {
+        let c = s.chars().nth(0);
+        if c.is_none() {
+            return Some(self);
+        }
+
+        let s = &s[1..];
+        let n = get_digit(c.unwrap()).unwrap();
+        let child = &self.children[n];
+        if child.is_none() {
+            return None;
+        }
+
+        child.as_ref().unwrap().get_node(s)
+    }
 }
 
 struct Trie {
@@ -81,6 +103,12 @@ impl Trie {
         assert!(is_lower_alphabet(s));
         self.root.search(s)
     }
+
+    pub fn delete(&mut self, s: &str) {}
+
+    pub fn get_node(&self, s: &str) -> Option<&Node> {
+        self.root.get_node(s)
+    }
 }
 
 #[cfg(test)]
@@ -98,6 +126,26 @@ mod tests {
     fn test_is_lower_alphabet() {
         assert!(is_lower_alphabet("helloworld"));
         assert!(!is_lower_alphabet("HelloWorld"));
+    }
+
+    #[test]
+    fn test_is_leaf() {
+        let mut trie = Trie::new();
+        assert!(trie.root.is_leaf());
+
+        trie.insert("a");
+        assert!(!trie.root.is_leaf());
+    }
+
+    #[test]
+    fn test_get_node() {
+        let mut trie = Trie::new();
+        assert!(trie.root.is_leaf());
+
+        trie.insert("hello");
+        assert!(trie.get_node("hel").is_some());
+        assert!(trie.get_node("hello").is_some());
+        assert!(trie.get_node("abc").is_none());
     }
 
     #[test]
@@ -127,5 +175,38 @@ mod tests {
         trie.insert("the");
 
         assert!(trie.search("there"));
+    }
+
+    #[test]
+    fn test_delete() {
+        let mut trie = Trie::new();
+        trie.insert("the");
+
+        trie.delete("the");
+        assert!(!trie.search("the"));
+        assert!(trie.root.is_leaf());
+    }
+
+    #[test]
+    fn test_delete_mid() {
+        let mut trie = Trie::new();
+        trie.insert("there");
+        trie.insert("the");
+        trie.delete("the");
+
+        assert!(!trie.search("the"));
+        assert!(trie.search("there"));
+    }
+
+    #[test]
+    fn test_delete_leaf() {
+        let mut trie = Trie::new();
+        trie.insert("there");
+        trie.insert("the");
+        trie.delete("there");
+
+        assert!(!trie.search("there"));
+        assert!(trie.search("the"));
+        // TODO: assert 'the' node is now leaf
     }
 }
