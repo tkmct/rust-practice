@@ -83,6 +83,20 @@ impl Node {
 
         child.as_ref().unwrap().get_node(s)
     }
+
+    fn delete(&mut self, s: &str) -> bool {
+        if self.is_leaf() {
+            return false;
+        }
+        // search given string and call delete
+        // if child.delete() {
+        //   delete child position
+        //   if other children exists, return false
+        //   if self is leaf, return true
+        // } else { do nothing }
+
+        false
+    }
 }
 
 struct Trie {
@@ -104,7 +118,9 @@ impl Trie {
         self.root.search(s)
     }
 
-    pub fn delete(&mut self, s: &str) {}
+    pub fn delete(&mut self, s: &str) {
+        self.root.delete(s);
+    }
 
     pub fn get_node(&self, s: &str) -> Option<&Node> {
         self.root.get_node(s)
