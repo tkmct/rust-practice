@@ -85,15 +85,24 @@ impl Node {
     }
 
     fn delete(&mut self, s: &str) -> bool {
-        if self.is_leaf() {
-            return false;
-        }
         // search given string and call delete
-        // if child.delete() {
-        //   delete child position
-        //   if other children exists, return false
-        //   if self is leaf, return true
-        // } else { do nothing }
+        let c = s.chars().nth(0);
+        // if self is the one to be deleted
+        if c.is_none() {
+            self.is_end_of_word = false;
+            return self.is_leaf();
+        }
+        let s = &s[1..];
+        let n = get_digit(c.unwrap()).unwrap();
+        let child = &mut self.children[n];
+        if let Some(child) = child {
+            if child.delete(s) {
+                self.children[n] = None;
+                if self.is_leaf() && !self.is_end_of_word {
+                    return true;
+                }
+            }
+        }
 
         false
     }
