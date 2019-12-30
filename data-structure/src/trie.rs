@@ -11,13 +11,13 @@ fn is_lower_alphabet(s: &str) -> bool {
     s.chars().all(|c| get_digit(c).is_some())
 }
 
-struct Node {
+pub struct Node {
     children: [Option<Box<Node>>; 26],
     is_end_of_word: bool,
 }
 
 impl Node {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let children = Default::default();
 
         Self {
@@ -26,12 +26,12 @@ impl Node {
         }
     }
 
-    fn append_child(&mut self, i: usize) {
+    pub fn append_child(&mut self, i: usize) {
         assert!(i <= 25);
         self.children[i] = Some(Box::new(Node::new()));
     }
 
-    fn insert(&mut self, s: &str) {
+    pub fn insert(&mut self, s: &str) {
         let c = s.chars().nth(0);
         if c.is_none() {
             self.is_end_of_word = true;
@@ -46,7 +46,7 @@ impl Node {
         self.children[n].as_mut().unwrap().insert(s);
     }
 
-    fn search(&self, s: &str) -> bool {
+    pub fn search(&self, s: &str) -> bool {
         let c = s.chars().nth(0);
         if c.is_none() {
             return self.is_end_of_word;
@@ -64,11 +64,11 @@ impl Node {
 
     /// returns true if there are at least one child node
     /// in children array
-    fn is_leaf(&self) -> bool {
+    pub fn is_leaf(&self) -> bool {
         self.children.iter().all(|c| c.is_none())
     }
 
-    fn get_node(&self, s: &str) -> Option<&Node> {
+    pub fn get_node(&self, s: &str) -> Option<&Node> {
         let c = s.chars().nth(0);
         if c.is_none() {
             return Some(self);
@@ -84,7 +84,7 @@ impl Node {
         child.as_ref().unwrap().get_node(s)
     }
 
-    fn delete(&mut self, s: &str) -> bool {
+    pub fn delete(&mut self, s: &str) -> bool {
         // search given string and call delete
         let c = s.chars().nth(0);
         // if self is the one to be deleted
@@ -108,7 +108,7 @@ impl Node {
     }
 }
 
-struct Trie {
+pub struct Trie {
     root: Node,
 }
 
