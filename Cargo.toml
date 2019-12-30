@@ -9,5 +9,6 @@ members = [
     "algorithm",
     "data-structure",
     "crypto",
-    "machine"
+    "machine",
+    "async"
 ]
