@@ -1,24 +1,33 @@
-struct Node {
-    left: Option<Box<Node>>,
-    right: Option<Box<Node>>,
+struct Node<T> {
+    data: T,
+    left: Option<Box<Node<T>>>,
+    right: Option<Box<Node<T>>>,
 }
 
-impl Node {
-    fn append_left(&mut self, child: Box<Node>) {
+impl<T> Node<T> {
+    pub fn new(data: T) -> Self {
+        Self {
+            data,
+            left: None,
+            right: None,
+        }
+    }
+
+    pub fn append_left(&mut self, child: Box<Node<T>>) {
         self.left = Some(child);
     }
 
-    fn append_right(&mut self, child: Box<Node>) {
+    pub fn append_right(&mut self, child: Box<Node<T>>) {
         self.right = Some(child);
     }
 }
 
-struct BinaryTree {
-    root: Box<Node>,
+struct BinaryTree<T> {
+    root: Box<Node<T>>,
 }
 
-impl BinaryTree {
-    pub fn new(root: Box<Node>) -> Self {
+impl<T> BinaryTree<T> {
+    pub fn new(root: Box<Node<T>>) -> Self {
         BinaryTree { root }
     }
 }
